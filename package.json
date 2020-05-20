@@ -1,0 +1,12 @@
+{
+  "name": "food_log",
+  "version": "1.0.0",
+  "description": "Logging your food",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.16.1"
+  }
+}
