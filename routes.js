@@ -1,5 +1,4 @@
-const express = require('express');
-const router = express.Router();
+const router = require('express').Router();
 
 router.get('/api/food/previous', (request, response) => {
     
@@ -29,4 +28,4 @@ router.get('/api/calorie/track/:goalId', (reauest, response) => {
 
 });
 
-modules.export = router;
+module.exports = router;
