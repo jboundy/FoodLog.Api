@@ -7,7 +7,10 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "csv-parser": "^2.3.3",
     "express": "^4.16.1",
-    "redis": "^3.0.2"
+    "redis": "^3.0.2",
+    "redis-cli": "^1.4.0",
+    "redis-server": "^1.2.2"
   }
 }
