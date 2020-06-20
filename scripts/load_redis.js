@@ -24,7 +24,7 @@ function readlines(path) {
 }
 
 
-let dataFile = filename(process.argv.slice(2))
+let dataFile = filename(process.argv.slice(2));
 const data = readlines(dataFile);
 
 
