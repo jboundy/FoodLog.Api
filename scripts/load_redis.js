@@ -34,38 +34,35 @@ function readlines(path) {
 
 /**
  * Lightweight csv parser. Will return null if doesn't match this function
+ * The first column is always the row number. We can discard this number.
+ * The second column is always the name of the item of interest. This column may contain a comma in a quoted string. 
+ * The rest of the column are data columns. 
+ * 
  * @param {String} line 
+ * @param {Int16} size of header
  * @returns {Array<String>} list of all the values in the field. 
  */
-function parseCsv(line) {
-    // TODO: THis doesn't work as intended. For example 100 g -> the 100 is stripped and only g remains.
-    return line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
-}
-
-/**
- * Parse a line from the nutritions dataset. For each row, we need to discard the first column since it's just
- * the row number. The second column is the name of nutritional item. For example: Lebanon bologna
- * @param {Array<String>} valueArray 
- * @returns {{name, values}}
- */
-function parseNutritionArray(valueArray) {
-    valueArray.shift(); // Discarding the first row due to it being row number
-    let name = valueArray.shift().replace(/['"]+/g, '');
-    let values = valueArray.toString();
+function parseNutritionCsv(line, dataColumnWidth) {
+    const split = line.split(",");
+    const columnStartValue = split.length - dataColumnWidth; // Find the optimal start column . 
+    const columnDatas = split.slice(columnStartValue, split.length);
+    const name = split.slice(0, columnStartValue);
+    name.shift(); // Remove the first row number
 
     return {
-        name: name,
-        values: values
-    };
+        name: name.toString().replace(/"/g, ""),
+        data: columnDatas
+    }
 }
 
-const data = Monet.Maybe.of(process.argv.slice(2))
+const values = Monet.Maybe.of(process.argv.slice(2))
     .map(getFilename)
     .map(readlines)
     .getOrElse([])
-    .map(parseCsv)
-    .filter(function(value) { return value != null; })
-    .map(parseNutritionArray);
+
+const dataColumnWidth = values[0].split(",").length - 2; // Subtract for row number and the name field.
+
+const data = values.map(value => parseNutritionCsv(value, dataColumnWidth));
 
 console.log(data.slice(0, 5));
     
