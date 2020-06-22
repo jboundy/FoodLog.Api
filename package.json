@@ -4,11 +4,13 @@
   "description": "Logging your food",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "load-redis": "node ./scripts/load_redis.js"
   },
   "dependencies": {
     "csv-parser": "^2.3.3",
     "express": "^4.16.1",
+    "monet": "^0.9.1",
     "redis": "^3.0.2",
     "redis-cli": "^1.4.0",
     "redis-server": "^1.2.2"
