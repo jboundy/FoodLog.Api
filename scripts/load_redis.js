@@ -31,6 +31,16 @@ function readlines(path) {
     }
 }
 
+/**
+ * @param {String} line line of column names separated by commas. The first value is always empty and second is always name.
+ * @returns {Array<String>} column names
+ */
+function parseHeader(line) {
+    const values = line.split(",");
+    values.shift(); // Remove the row number
+
+    return values;
+}
 
 /**
  * Lightweight csv parser. Will return null if doesn't match this function
@@ -39,31 +49,40 @@ function readlines(path) {
  * The rest of the column are data columns. 
  * 
  * @param {String} line 
+ * @param {Array<String>}
  * @param {Int16} size of header
  * @returns {Array<String>} list of all the values in the field. 
  */
-function parseNutritionCsv(line, dataColumnWidth) {
+function parseNutritionCsv(line, columnNames, dataColumnWidth) {
     const split = line.split(",");
     const columnStartValue = split.length - dataColumnWidth; // Find the optimal start column . 
     const columnDatas = split.slice(columnStartValue, split.length);
-    const name = split.slice(0, columnStartValue);
-    name.shift(); // Remove the first row number
 
-    return {
-        name: name.toString().replace(/"/g, ""),
-        data: columnDatas
-    }
+    const dataDict = Object.assign({}, ...columnNames.map((name, idx) => ({[name]: columnDatas[idx]}) ));
+    
+    return dataDict;
 }
 
-const values = Monet.Maybe.of(process.argv.slice(2))
-    .map(getFilename)
-    .map(readlines)
-    .getOrElse([])
+/**
+ * 
+ * @param {Array<String>} args list of command line args. This will run the comands in the correct sequence to parse the data correctly. 
+ * @returns {Map} data is a key value map of nutrition data.
+ */
+function createDataFromArgs(args) {
+    const values = Monet.Maybe.of(args)
+        .map(getFilename)
+        .map(readlines)
+        .getOrElse([])
 
-const dataColumnWidth = values[0].split(",").length - 2; // Subtract for row number and the name field.
+    const headerColumnNames = values.shift();
+    const dataColumnWidth = headerColumnNames.split(",").length - 1; // Subtract for row number and the name field.
+    const columnNames = parseHeader(headerColumnNames);
 
-const data = values.map(value => parseNutritionCsv(value, dataColumnWidth));
+    return values.map(value => parseNutritionCsv(value, columnNames, dataColumnWidth));
+}
+
+const data = createDataFromArgs(process.argv.slice(2));
 
 console.log(data.slice(0, 5));
-    
+
 client.quit();
