@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "csv-parser": "^2.3.3",
-    "express": "^4.16.1",
+    "express": "^4.17.3",
     "monet": "^0.9.1",
     "redis": "^3.0.2",
     "redis-cli": "^1.4.0",
